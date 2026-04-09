@@ -1,0 +1,11 @@
+{
+  "name": "npm-supply-chain-guard",
+  "version": "1.0.0",
+  "description": "Claude Code plugin that blocks unsafe npm/yarn/pnpm installs and provides supply-chain hardening commands.",
+  "author": {
+    "name": "yeonny0723"
+  },
+  "homepage": "https://github.com/yeonny0723/npm-supply-chain-guard",
+  "repository": "https://github.com/yeonny0723/npm-supply-chain-guard",
+  "license": "MIT"
+}

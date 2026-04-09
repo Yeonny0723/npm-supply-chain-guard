@@ -1,0 +1,16 @@
+{
+  "name": "yeonny0723",
+  "owner": {
+    "name": "yeonny0723"
+  },
+  "plugins": [
+    {
+      "name": "npm-supply-chain-guard",
+      "source": {
+        "source": "github",
+        "repo": "yeonny0723/npm-supply-chain-guard"
+      },
+      "category": "security"
+    }
+  ]
+}
