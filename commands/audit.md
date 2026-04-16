@@ -165,6 +165,8 @@ npm audit fix --dry-run --json
 ```
 
 JSON 출력을 파싱해 변경 예정 패키지 목록과 각 버전 변화를 추출한다.
+추출 대상 필드: `auditReportVersion`, `actions[].action`, `actions[].resolves[].id`, `vulnerabilities[*].fixAvailable` (npm v7+의 경우 `vulnerabilities` 구조 사용).
+`fixAvailable`이 객체이면 업그레이드 가능, `false`이면 수정 불가, `true`이면 자동 수정 가능으로 판단한다.
 
 #### 8-3. safe fix 분류
 
@@ -178,13 +180,15 @@ dry-run 결과에서 각 패키지의 변경을 아래 기준으로 분류한다
 
 #### 8-4. safe fix 자동 실행
 
+safe fix 대상이 없으면 8-4를 건너뛰고 8-5의 "자동으로 수정 가능한 취약점이 없습니다." 형식으로 바로 출력한다.
+
 safe fix 대상이 1개 이상이면 아래 명령을 실행한다.
 
 ```bash
 npm audit fix
 ```
 
-실행 후 잔여 취약점 수를 확인하기 위해 다시 감사한다.
+실행 후 잔여 취약점 수를 확인하기 위해 다시 감사한다 (`--dry-run` 없이 실제 변경 결과를 측정한다).
 
 ```bash
 npm audit --json
