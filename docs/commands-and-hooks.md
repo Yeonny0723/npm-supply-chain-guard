@@ -50,7 +50,7 @@
 | Command | Primary job | Typical timing |
 |---|---|---|
 | `/npm-supply-chain-guard:init` | 패키지 매니저 설정 파일에 보안값을 추가 적용 | 프로젝트별 1회 또는 설정 검토 후 |
-| `/npm-supply-chain-guard:audit` | 의존성 위험 상태와 워크플로 위생 점검 | 수시, 배포 전, CI |
+| `/npm-supply-chain-guard:audit` | 의존성 위험 상태와 워크플로 위생 점검, 안전한 취약점 자동 수정 | 수시, 배포 전, CI |
 | `/npm-supply-chain-guard:schedule` | 반복 감사 스케줄 등록 | 워크스페이스 또는 팀 설정 시 1회 |
 | `/npm-supply-chain-guard:git:commit` | 커밋 전에 의존성 변경 위험 노출 | 커밋 시마다 |
 
@@ -66,8 +66,11 @@ flowchart TD
 
   G[/init/] --> H[프로젝트 설정 강화]
   I[/audit/] --> J[의존성 위험 검토]
-  K[/schedule/] --> L[반복 감사 등록]
-  M[/git:commit/] --> N[의존성 diff 강조]
+  J --> K{취약점 있음?}
+  K -->|YES| L[safe fix 자동 적용\nforce-only는 경고]
+  K -->|NO| M[종료]
+  N[/schedule/] --> O[반복 감사 등록]
+  P[/git:commit/] --> Q[의존성 diff 강조]
 ```
 
 ## 왜 이렇게 나눴는가
