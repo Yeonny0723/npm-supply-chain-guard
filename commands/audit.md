@@ -5,6 +5,7 @@ allowed-tools:
   - Bash(yarn audit:*)
   - Bash(npm ls:*)
   - Bash(yarn list:*)
+  - Bash(npm audit fix:*)
   - Bash(git ls-files:*)
   - Bash(git check-ignore:*)
   - Bash(git diff:*)
