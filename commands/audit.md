@@ -143,3 +143,82 @@ yarn list --depth=3     # yarn (classic)
 ```
 # /npm-supply-chain-guard:schedule
 ```
+
+### Step 8: 자동 수정 (취약점이 있을 때만)
+
+Step 3의 audit 결과에서 취약점이 **1개 이상** 발견된 경우에만 이 단계를 실행한다. 취약점이 0개이면 Step 8 전체를 건너뛴다.
+
+#### 8-1. yarn 프로젝트 처리
+
+패키지 매니저가 yarn이면 `npm audit fix`를 지원하지 않으므로 아래 메시지를 출력하고 Step 8을 종료한다.
+
+```
+⚠️  yarn 프로젝트는 npm audit fix를 지원하지 않습니다.
+    취약 패키지를 직접 업데이트하세요:
+    yarn upgrade <패키지명>@<수정버전>
+```
+
+#### 8-2. dry-run으로 수정 범위 파악
+
+```bash
+npm audit fix --dry-run --json
+```
+
+JSON 출력을 파싱해 변경 예정 패키지 목록과 각 버전 변화를 추출한다.
+
+#### 8-3. safe fix 분류
+
+dry-run 결과에서 각 패키지의 변경을 아래 기준으로 분류한다.
+
+| 분류 | 조건 | 처리 |
+|------|------|------|
+| **safe fix** | patch 또는 minor 버전 업 (major 불변) | 자동 실행 |
+| **force-only** | major 버전 변경 또는 `--force` 필요 | 경고만 출력 |
+| **수정 불가** | `fixAvailable: false` | 경고만 출력 |
+
+#### 8-4. safe fix 자동 실행
+
+safe fix 대상이 1개 이상이면 아래 명령을 실행한다.
+
+```bash
+npm audit fix
+```
+
+실행 후 잔여 취약점 수를 확인하기 위해 다시 감사한다.
+
+```bash
+npm audit --json
+```
+
+#### 8-5. 결과 출력
+
+아래 형식으로 결과를 출력한다.
+
+```
+🔧 Step 8: 자동 수정
+
+  ✅ safe fix 적용 (N개 패키지 업데이트)
+     <패키지명>: <이전버전> → <수정버전>
+     ...
+
+  ⚠️  수동 조치 필요 (M개)
+     <패키지명> (<severity>) — major 버전 변경 필요, 수동으로 검토하세요.
+     <패키지명> (<severity>) — 패치 없음, 대체 패키지를 검토하세요.
+
+  감사 재실행 결과: 잔여 취약점 K개
+```
+
+safe fix 대상이 없고 force-only/수정불가만 있는 경우:
+
+```
+🔧 Step 8: 자동 수정
+
+  자동으로 수정 가능한 취약점이 없습니다.
+
+  ⚠️  수동 조치 필요 (M개)
+     <패키지명> (<severity>) — major 버전 변경 필요, 수동으로 검토하세요.
+     <패키지명> (<severity>) — 패치 없음, 대체 패키지를 검토하세요.
+```
+
+> ⚠️ `npm audit fix --force` 는 breaking change를 유발할 수 있으므로 자동 실행하지 않습니다.
+> safe fix 실행 시 `package-lock.json`이 변경됩니다. 변경 내용을 리뷰 후 커밋하세요.
