@@ -25,6 +25,7 @@ install-time 가드레일과 감사 워크플로를 통해, 공급망 공격으�
 - 위험한 설치 패턴 (`--ignore-scripts` 누락 등) 경고
 - `.npmrc`, `.yarnrc.yml` 보안 설정 초기화
 - 의존성, semver, lockfile, 트리 감사
+- 취약점 발견 시 safe fix 자동 수정 (patch/minor 범위)
 - 주간 감사 스케줄링
 - 커밋 시 의존성 변경 감지
 
@@ -64,6 +65,9 @@ flowchart TD
   E --> F[의존성 트리 출력]
   F --> G[수동 점검 체크리스트 안내]
   G --> H[주간 감사 스케줄 설정 유도]
+  H --> I{취약점 있음?}
+  I -->|YES| J[safe fix 자동 적용\nforce-only·수정불가는 경고]
+  I -->|NO| K[종료]
 ```
 
 
